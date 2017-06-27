@@ -25,54 +25,39 @@ bot.on('message', (msg) => {
   const text = msg.text;
   const chatId = msg.chat.id;
 
-  if(isWeatherQuery(text))
+  if (isWelcomeQuery(text))
+  {
+     bot.sendMessage(chatId, 'Hi '+msg.from.first_name);
+  }
+  else if(isWeatherQuery(text))
   {
     const city = getCityForWeatherQuery(text);
-
     const currentDayNumber = parseInt(new Date().getDay());
-    console.log("CurrentDayNumber",currentDayNumber);
+
     Wetter.getWeather(city).then((result) => {
-         // console.log("Result",result);
 
-          const weatherToday = 'Das Wetter in ' + city + ' beträgt derzeit '
-            + result[0].current.temperature + ' Grad. ' 
-            + result[0].current.skytext + '.';
+        const forecast = result[0].forecast[currentDayNumber+1];
 
-          console.log("Forecasts tomorrow",result[0].forecast[currentDayNumber+1]);
+        const weatherToday = 'Das Wetter in ' + city + ' beträgt derzeit '
+          + result[0].current.temperature + ' Grad mit ' 
+          + result[0].current.skytext + '.';
 
+        const weatherTomorrow = 'Morgen wird es zu ' + forecast.precip
+          + '% ' + forecast.skytextday + ' geben.';
 
-          const weatherTomorrow = 'Morgen wird es zu ' + result[0].forecast[currentDayNumber+1].precip
-           + '% ' + result[0].forecast[currentDayNumber+1].skytextday + ' geben.';
+        const resultMsg = weatherToday + '\n' + weatherTomorrow;
 
-          const resultMsg = weatherToday + '\n' + weatherTomorrow;
-
-          bot.sendMessage(chatId, resultMsg);
-      })
-      .catch((err) => {
-        bot.sendMessage(chatId,"Leider konnte ich dich nicht verstehen, du Idiot! " + err);
+        bot.sendMessage(chatId, resultMsg);
+    })
+    .catch((err) => {
+      bot.sendMessage(chatId,"Leider konnte ich dich nicht verstehen, du Idiot! " + err);
     });
   }
   else
   {
     // send a message to the chat acknowledging receipt of their message 
-    bot.sendMessage(chatId, 'Received your message'+text);
+    //bot.sendMessage(chatId, 'Received your message'+text);
   } 
-
-  // if(text.startsWith('Wetter in'))
-  // {
-  //     const city = text.substring(10,text.length);
-  //     Wetter.getWeather(city).then((result) => {
-  //         console.log("Result",result);
-
-  //         const resultMsg = 'Das Wetter in ' + city + ' beträgt derzeit '
-  //           +result[0].current.temperature + ' Grad.'
-
-  //         bot.sendMessage(chatId, resultMsg);
-  //     })
-  //     .catch(() => {
-  //       bot.sendMessage(chatId,"Leider konnte ich dich nicht verstehen, du Idiot! " + err);
-  //   });
-  // }
 });
 
 function isWeatherQuery(text)
@@ -90,5 +75,23 @@ function isWeatherQuery(text)
 function getCityForWeatherQuery(text)
 {
   const index = text.indexOf('Wetter in');
-  return text.substring(index,text.length);
+  return text.substring(index + 10,text.length);
+}
+
+function isWelcomeQuery(text)
+{
+  const welcomes = ['hi','hey','hallo','guten tag','guten abend'];
+  let isWeatherQuery = false;
+
+  for(let i = 0; i < welcomes.length; i++)
+  {
+    console.log(text.toUpperCase(),welcomes[i].toUpperCase(),text.toUpperCase().includes(welcomes[i].toUpperCase()));
+    if(text.toUpperCase().includes(welcomes[i].toUpperCase()))
+    {
+      isWeatherQuery = true;
+      break;
+    }
+  }
+
+  return isWeatherQuery;
 }
