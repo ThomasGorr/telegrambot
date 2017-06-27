@@ -9,7 +9,12 @@ function getWeather(city)
 {
     return new Promise((resolve, reject) => {
         weather.find({search: city, degreeType: 'C'}, function(err, result) {
-        if(err) console.log(err);
+        if(err) 
+        {
+            console.log(err);
+            reject(err);
+        }
+        
             resolve(result);
         });
     });

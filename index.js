@@ -35,7 +35,10 @@ bot.on('message', (msg) => {
             +result[0].current.temperature + ' Grad.'
 
           bot.sendMessage(chatId, resultMsg);
-      });
+      })
+      .catch(() => {
+        bot.sendMessage(chatId,"Leider konnte ich dich nicht verstehen, du Idiot!");
+    });
   }
   else
   {
