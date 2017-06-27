@@ -43,6 +43,6 @@ bot.on('message', (msg) => {
   else
   {
     // send a message to the chat acknowledging receipt of their message 
-    bot.sendMessage(chatId, 'Received your message');
+    bot.sendMessage(chatId, 'Received your message'+text);
   } 
 });
