@@ -37,7 +37,7 @@ bot.on('message', (msg) => {
           bot.sendMessage(chatId, resultMsg);
       })
       .catch(() => {
-        bot.sendMessage(chatId,"Leider konnte ich dich nicht verstehen, du Idiot!");
+        bot.sendMessage(chatId,"Leider konnte ich dich nicht verstehen, du Idiot! " + err);
     });
   }
   else
