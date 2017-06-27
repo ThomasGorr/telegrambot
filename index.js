@@ -25,18 +25,30 @@ bot.on('message', (msg) => {
   const text = msg.text;
   const chatId = msg.chat.id;
 
-  if(text.startsWith('Wetter in'))
+  if(isWeatherQuery(text))
   {
-      const city = text.substring(10,text.length);
-      Wetter.getWeather(city).then((result) => {
-          console.log("Result",result);
+    const city = getCityForWeatherQuery(text);
 
-          const resultMsg = 'Das Wetter in ' + city + ' beträgt derzeit '
-            +result[0].current.temperature + ' Grad.'
+    const currentDayNumber = parseInt(new Date().getDay());
+    console.log("CurrentDayNumber",currentDayNumber);
+    Wetter.getWeather(city).then((result) => {
+         // console.log("Result",result);
+
+          const weatherToday = 'Das Wetter in ' + city + ' beträgt derzeit '
+            + result[0].current.temperature + ' Grad. ' 
+            + result[0].current.skytext + '.';
+
+          console.log("Forecasts tomorrow",result[0].forecast[currentDayNumber+1]);
+
+
+          const weatherTomorrow = 'Morgen wird es zu ' + result[0].forecast[currentDayNumber+1].precip
+           + '% ' + result[0].forecast[currentDayNumber+1].skytextday + ' geben.';
+
+          const resultMsg = weatherToday + '\n' + weatherTomorrow;
 
           bot.sendMessage(chatId, resultMsg);
       })
-      .catch(() => {
+      .catch((err) => {
         bot.sendMessage(chatId,"Leider konnte ich dich nicht verstehen, du Idiot! " + err);
     });
   }
@@ -45,4 +57,38 @@ bot.on('message', (msg) => {
     // send a message to the chat acknowledging receipt of their message 
     bot.sendMessage(chatId, 'Received your message'+text);
   } 
+
+  // if(text.startsWith('Wetter in'))
+  // {
+  //     const city = text.substring(10,text.length);
+  //     Wetter.getWeather(city).then((result) => {
+  //         console.log("Result",result);
+
+  //         const resultMsg = 'Das Wetter in ' + city + ' beträgt derzeit '
+  //           +result[0].current.temperature + ' Grad.'
+
+  //         bot.sendMessage(chatId, resultMsg);
+  //     })
+  //     .catch(() => {
+  //       bot.sendMessage(chatId,"Leider konnte ich dich nicht verstehen, du Idiot! " + err);
+  //   });
+  // }
 });
+
+function isWeatherQuery(text)
+{
+  if(text.includes('Wetter in'))
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+function getCityForWeatherQuery(text)
+{
+  const index = text.indexOf('Wetter in');
+  return text.substring(index,text.length);
+}
