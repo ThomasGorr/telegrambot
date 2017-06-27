@@ -1,27 +1,18 @@
 const TelegramBot = require('node-telegram-bot-api');
 const Wetter      = require('./wetter');
+const fs          = require('fs');
+const Buffer      = require('buffer').Buffer;
+const dir = 'C:/Users/tgorr/Pictures/Memes/';
 // replace the value below with the Telegram token you receive from @BotFather 
 const token = '394034476:AAFWXnjHqBfIcOcA_1hntnymNFLJxGSh8YU';
- 
+
 // Create a bot that uses 'polling' to fetch new updates 
 const bot = new TelegramBot(token, {polling: true});
- 
-// Matches "/echo [whatever]" 
-bot.onText(/\/echo (.+)/, (msg, match) => {
-  // 'msg' is the received Message from Telegram 
-  // 'match' is the result of executing the regexp above on the text content 
-  // of the message 
-  const chatId = msg.chat.id;
-  const resp = match[1]; // the captured "whatever" 
- 
-  // send back the matched "whatever" to the chat 
-  bot.sendMessage(chatId, resp);
-});
- 
+
 // Listen for any kind of message. There are different kinds of 
 // messages. 
 bot.on('message', (msg) => {
- console.log("Msg",msg);
+  //console.log("Msg",msg);
   const text = msg.text;
   const chatId = msg.chat.id;
 
@@ -29,7 +20,7 @@ bot.on('message', (msg) => {
   {
      bot.sendMessage(chatId, 'Hi '+msg.from.first_name);
   }
-  else if(isWeatherQuery(text))
+  if(isWeatherQuery(text))
   {
     const city = getCityForWeatherQuery(text);
     const currentDayNumber = parseInt(new Date().getDay());
@@ -60,6 +51,26 @@ bot.on('message', (msg) => {
   } 
 });
 
+// Matches "/sendpic [whatever]" 
+
+bot.onText(/\/sendpic/, (msg) => {
+
+  const img = getImage();
+
+  img.then((image) => {
+
+    console.log("Image",image);
+    bot.sendPhoto(
+      msg.chat.id,
+      image,
+      {caption : "LOL & ROFLCOPTER"}
+      );
+  })
+  .catch((err) => {
+    console.log("Error in sendpic",err);
+  })
+});
+
 function isWeatherQuery(text)
 {
   if(text.includes('Wetter in'))
@@ -85,7 +96,7 @@ function isWelcomeQuery(text)
 
   for(let i = 0; i < welcomes.length; i++)
   {
-    console.log(text.toUpperCase(),welcomes[i].toUpperCase(),text.toUpperCase().includes(welcomes[i].toUpperCase()));
+    //console.log(text.toUpperCase(),welcomes[i].toUpperCase(),text.toUpperCase().includes(welcomes[i].toUpperCase()));
     if(text.toUpperCase().includes(welcomes[i].toUpperCase()))
     {
       isWeatherQuery = true;
@@ -94,4 +105,29 @@ function isWelcomeQuery(text)
   }
 
   return isWeatherQuery;
+}
+
+function getImage()
+{
+  return new Promise((resolve, reject) =>
+  {
+    fs.readdir(dir, (err, files) => {
+      const numberOfFiles = files.length;
+      const fileName = Math.floor(Math.random(1,20) * numberOfFiles) +1+ '.jpg';
+      console.log("Filename",fileName);
+      fs.readFile('C:/Users/tgorr/Pictures/Memes/'+fileName, function(err, buffer)
+      {
+
+        if(err)
+        {
+          console.error(err);
+          reject("Error in getImage", err);
+        }
+
+        //console.log("String",new Buffer(buffer));
+
+        resolve(new Buffer(buffer));
+      });
+    });
+  }); 
 }
