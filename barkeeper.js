@@ -1,6 +1,8 @@
 const apiai       = require('apiai');
 
-const app = apiai('ae3984e573144be98408d2c2e4390635');
+const apiKeys     = require('./apikeys');
+
+const app = apiai(apiKeys.apiai);
 
 var request = app.textRequest('Gib mir ein Bier', {
     sessionId: 'CocktailSession'

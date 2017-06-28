@@ -4,7 +4,9 @@ const fs          = require('fs');
 const Buffer      = require('buffer').Buffer;
 const apiai       = require('apiai');
 
-const app = apiai('ae3984e573144be98408d2c2e4390635');
+const apiKeys     = require('./apikeys');
+
+const app = apiai(apiKeys.apiai);
 
 var request = app.textRequest('Gib mir ein Bier', {
     sessionId: 'CocktailSession'
@@ -23,7 +25,7 @@ request.end();
 
 const dir = 'C:/Users/tgorr/Pictures/Memes/';
 // replace the value below with the Telegram token you receive from @BotFather 
-const token = '394034476:AAFWXnjHqBfIcOcA_1hntnymNFLJxGSh8YU';
+const token = apiKeys.telegram;
 
 // Create a bot that uses 'polling' to fetch new updates 
 const bot = new TelegramBot(token, {polling: true});
