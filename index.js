@@ -2,6 +2,25 @@ const TelegramBot = require('node-telegram-bot-api');
 const Wetter      = require('./wetter');
 const fs          = require('fs');
 const Buffer      = require('buffer').Buffer;
+const apiai       = require('apiai');
+
+const app = apiai('ae3984e573144be98408d2c2e4390635');
+
+var request = app.textRequest('Gib mir ein Bier', {
+    sessionId: 'CocktailSession'
+});
+
+request.on('response', function(response) {
+    console.log(response);
+});
+ 
+request.on('error', function(error) {
+    console.log(error);
+});
+ 
+request.end();
+
+
 const dir = 'C:/Users/tgorr/Pictures/Memes/';
 // replace the value below with the Telegram token you receive from @BotFather 
 const token = '394034476:AAFWXnjHqBfIcOcA_1hntnymNFLJxGSh8YU';
